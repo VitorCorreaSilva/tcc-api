@@ -36,10 +36,10 @@ namespace tcc.Controllers
 
             ImageAnnotatorClient client = ImageAnnotatorClient.Create();
             IReadOnlyList<EntityAnnotation> textAnnotations = client.DetectText(image);
-            foreach (EntityAnnotation text in textAnnotations)
-            {
-                lista.Add($"Description: {text.Description}");
-            }
+
+            var t = textAnnotations[0].Description.Split("\n");
+
+            lista.Add($"Description: {textAnnotations[0].Description}");
 
             return lista;
         }
