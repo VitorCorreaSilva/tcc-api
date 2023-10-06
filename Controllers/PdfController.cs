@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using Google.Cloud.Vision.V1;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,23 +25,28 @@ namespace tcc.Controllers
         }
 
         [HttpPost]
-        public List<string> Anexar(IFormFile file)
+        public string Anexar(IFormFile file)
         {
             var extension = Path.GetExtension(file.FileName);
             var fileName = Path.GetFileNameWithoutExtension(file.FileName);
 
             Image image = Image.FromStream(file.OpenReadStream());
 
-            List<string> lista = new List<string>();
+            var t = new Bitmap(image);
 
-            ImageAnnotatorClient client = ImageAnnotatorClient.Create();
-            IReadOnlyList<EntityAnnotation> textAnnotations = client.DetectText(image);
+            for(int x = 0; x < t.Width; x++)
+            {
+                for(int y = 0; y < t.Height; y++)
+                {
+                    Color pixelColor = t.GetPixel(x, y);
+                    Color newColor = Color.FromArgb(pixelColor.R, 0, 0);
+                    t.SetPixel(x, y, newColor);
+                }
+            }
 
-            var t = textAnnotations[0].Description.Split("\n");
 
-            lista.Add($"Description: {textAnnotations[0].Description}");
 
-            return lista;
+            return "OK";
         }
     }
 }
