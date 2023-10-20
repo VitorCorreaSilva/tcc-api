@@ -1,0 +1,12 @@
+version: "3.8"
+services:  
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - LOG_FILE_NAME=log_file.log
+    volumes:
+      - './app:/app'
+    ports:
+      - "5000:5000"
