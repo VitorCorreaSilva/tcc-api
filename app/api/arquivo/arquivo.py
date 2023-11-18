@@ -8,7 +8,8 @@ words = ["pagamento",
 "fatura",
 "juros",
 "saldo",
-"financiamento"]
+"financiamento",
+"iof"]
 
 def search_words(text):
     regex = "|".join(words)
@@ -21,16 +22,16 @@ def search_words(text):
         return True
 
 def main(file):
-    reader = PdfReader(file) 
+    reader = PdfReader(file)
 
     if reader.is_encrypted:
         reader.decrypt("02346")
 
     text = ''
     for page in reader.pages:
-        text += page.extract_text() 
+        text += page.extract_text()
 
-    regex = r"(\d{2}\W(\d{2}\s|[a-zA-Z]{3}\s|\d{2})[a-zA-Z\s*-]*(\d{1,}[,]\d{2}|\d{1,2}[\/]\d{1,2}\W\d{1,}[,]\d{2}))"
+    regex = r"((\d{2}\W)(\d{2}\s|[a-zA-Z]{3}\s|\d{2})([a-zA-Z\s*-]*(\d{1,2}/\d{1,2}\W)?)(\d{1,}[,]\d{2}))"
 
     text = text.replace('\n','')
 
@@ -40,13 +41,18 @@ def main(file):
     for i in dates:
         dif = i.end() - i.start()
         if(dif > 15 and dif < 50 and search_words(i.group())):
-            result.append(i.group())
+            data = {
+                "day": i.group(2)[:-1],
+                "month": i.group(3).strip(),
+                "title": i.group(4).strip(),
+                "value": i.group(6),
+            }
+            result.append(data)
 
     return result
 
 def upload(file):
     # Inicia o sistema de log
-    print(logfile_name)
     start_log(new_logname=logfile_name)
     sucesso = False
     try:
@@ -56,6 +62,6 @@ def upload(file):
         log(e)
         log(e_msg())
     return {
-        "Sucesso": sucesso,
+        "payload": sucesso,
         "log": log_as_json()
     }, 200 if sucesso else 500
