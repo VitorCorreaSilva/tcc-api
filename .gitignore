@@ -1,3 +1,7 @@
 Pipfile
 __pycache__
 *.log
+
+terraform/plan
+terraform/*.backup
+.terraform/
