@@ -1,8 +1,9 @@
-FROM python:3.6-slim
+FROM python:3.11-slim
 
 # Adiciona aplicação
-ADD . /data
 WORKDIR /data
-RUN pip install -r requirements.txt
+ADD . .
 
-CMD ["python", "-u", "/app/main.py"]
+RUN pip install -r requirements.txt
+EXPOSE 8000
+CMD ["python", "-u", "./app/main.py"]
